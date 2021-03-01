@@ -1,4 +1,4 @@
-# FoodNet Angular11-SSR-i18n Restaurant App
+# Angular11-SSR-i18n Restaurant App
 
 Angular 11 Server Side Rendering Restaurant APP with i18n
 
