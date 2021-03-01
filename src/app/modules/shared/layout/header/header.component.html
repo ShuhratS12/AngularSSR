@@ -1,0 +1,99 @@
+<header>
+  <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-white">
+    <div class="header_content">
+      <div class="left_section">
+        <a class="navbar-brand" (click)="moveToHome()">
+          <img src="./assets/icons/foodnet-logo.svg" alt="">
+        </a>
+        <div class="header_search">
+          <i class="fas fa-map-marker-alt marker_search"></i>
+          <p-autoComplete [(ngModel)]="selectedCity" [suggestions]="filteredCities"
+            (completeMethod)="searchCity($event)" placeholder="Település" field="cities"
+            i18n="@@header-search-placeholder">
+            <ng-template let-city pTemplate="item">
+              <i class="fas fa-map-marker-alt"></i>
+              <div style="display: inline; margin-left: 10px;">{{city.cities}}</div>
+            </ng-template>
+          </p-autoComplete>
+          <button class="btn btn-warning text-white search_btn" [disabled]="selectedCity == null"
+            i18n="@@header-search-button" (click)="getRestaurantsByLocation()">Search</button>
+        </div>
+      </div>
+      <div class="right_section" *ngIf="isBrowser">
+        <p-dropdown [options]="languages" itemSize="30" name="selectedLanguage" [(ngModel)]="selectedLanguage"
+          [hidden]="isHiddenLang$ | async">
+          <ng-template let-lang pTemplate="item">
+            <div class="lang-item">
+              <a class="language-link" href="{{(lang.name === 'ro') ? currentUrl : '/' + lang.name + currentUrl}}"
+                (click)="changeLanguage(lang)">{{lang.label}}</a>
+            </div>
+          </ng-template>
+        </p-dropdown>
+
+        <ng-container *ngIf="authService.isAuthenticated();else log_out">
+          <a class="order_status text-decoration-none ml-3"><span class="mr-1" style="color: #111;">My
+              orders</span><span class="text-warning">(1 active)</span></a>
+          <div class="vertical_line"></div>
+          <a class="profile_menu" (click)="menuShowEvent()"
+            (mouseenter)="menuShowMouseEvent()">{{cookieService.get('auth_name')}} <i class="fas"
+              [ngClass]="menuShow? 'fa-chevron-up' : 'fa-chevron-down'"></i></a>
+          <div class="menu_content" *ngIf="menuShow == true">
+            <ul>
+              <li class="menuitem" [ngClass]="profileType == 'update' ? 'active' : ''" (click)="loadComponent('update')"
+                i18n="@@header-menu-edit-profile">Edit
+                profile information</li>
+              <li class="menuitem" [ngClass]="profileType == 'changepwd' ? 'active' : ''"
+                (click)="loadComponent('changepwd')" i18n="@@header-menu-change-password">
+                Change password</li>
+              <li class="menuitem"
+                [ngClass]="(profileType == 'delivery-list' || profileType == 'delivery-edit')? 'active' : ''"
+                (click)="loadComponent('delivery-list')" i18n="@@header-menu-delivery-address">Delivery addresses list
+              </li>
+              <li class="menuitem" [ngClass]="profileType == 'orders' ? 'active' : ''" (click)="loadComponent('orders')"
+                i18n="@@header-menu-previous-orders">Previous
+                orders</li>
+              <li class="menuitem"
+                [ngClass]="(profileType == 'review-list' ||  profileType == 'review-edit') ? 'active' : ''"
+                (click)="loadComponent('review-list')" i18n="@@header-menu-review-list">Review list</li>
+              <li class="menuitem" [ngClass]="profileType == 'delete' ? 'active' : ''" (click)="loadComponent('delete')"
+                i18n="@@header-menu-delete-profile">Delete
+                profile</li>
+              <hr />
+              <li class="menuitem" i18n="@@header-logout-button" (click)="logout()" i18n="@@header-logout-button">Log
+                Out</li>
+            </ul>
+          </div>
+        </ng-container>
+        <!-- <ng-template #log_out>
+          <button class="btn text-warning bg-warning-light" i18n="@@header-login-button" routerLink="auth/login"
+            routerLinkActive>Login</button>
+          <button class="btn btn-warning text-white" i18n="@@header-registeration-button"
+            routerLink="/auth/register">Registration</button>
+        </ng-template> -->
+        <ng-template #log_out>
+          <button class="btn text-warning bg-warning-light" i18n="@@header-login-button"
+            (click)="logIn()">Login</button>
+          <button class="btn btn-warning text-white" i18n="@@header-registeration-button"
+            (click)="register()">Registration</button>
+        </ng-template>
+        <span class="bg-warning-light notification" (click)="goToOrder()">
+          <img src="./assets/icons/shop_bag.svg" alt="">
+          <span class="badge bg-warning text-white">{{cartNumber$ | async}}</span>
+        </span>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<p-dialog header="" [(visible)]="isShown" [style]="{width: '255px'}" [baseZIndex]="10000" styleClass="custom_dialog"
+  *ngIf="isBrowser" [modal]="true">
+  <p-header>
+    <h2 i18n="@@header-delete-dialog-a">Are you sure you want to go to Home?</h2>
+  </p-header>
+  <p class="text-bold text-center" i18n="@@header-delete-dialog-b">This will cause all your previous cart to be lost
+    and cannot be restored.</p>
+  <p-footer>
+    <button type="button" class="btn bg-grey" (click)="closeMsg(false)" i18n="@@header-delete-dialog-c">No</button>
+    <button type="button" class="btn bg-grey" (click)="closeMsg(true)" i18n="@@header-delete-dialog-d">Yes</button>
+  </p-footer>
+</p-dialog>

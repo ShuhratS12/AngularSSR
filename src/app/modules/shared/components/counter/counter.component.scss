@@ -1,0 +1,56 @@
+.counter_container {
+  .decrease,
+  .increase {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: .3rem .6rem;
+    cursor: pointer;
+    .fas {
+      font-size: 18px;
+    }
+  }
+  .amounts {
+    width: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: .3rem .6rem;
+  }
+  .counts,
+  .unit {
+    font-size: 16px;
+  }
+  .status_item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f78f1e;
+    padding: .3rem .6rem;
+    img {
+      width: 20px;
+      height: auto;
+    }
+    @media all and (max-width: 1280px){
+      padding: .3rem .4rem;
+    }
+  }
+  
+}
+
+
+.btn-white {
+  background-color: white;
+  border: 2px solid #C4C4C4;
+  border-radius: 6px;
+}
+
+.btn-warning-light {
+  background-color: #FEEBD6;
+  height: 50px;
+  width: 56px;
+  border-radius: 6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

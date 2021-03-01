@@ -1,0 +1,55 @@
+<div class="content d-flex flex-column justify-content-start align-items-start" *ngIf="!isSpinner">
+  <div class="order_detail_content d-flex flex-column justify-content-start align-items-start">
+    <label class="text-grey" for="item">Order ID:</label>
+    <p id="item" class="text-bold mt-0">{{orderId}}</p>
+  </div>
+  <div class="order_detail_content d-flex flex-column justify-content-start align-items-start">
+    <label class="text-grey" for="item">Order placed:</label>
+    <p id="item" class="text-bold mt-0">{{orderCreatedAt}}</p>
+  </div>
+  <div class="order_detail_content d-flex flex-column justify-content-start align-items-start">
+    <label class="text-grey" for="item">Place and method of collection:</label>
+    <p id="item" class="text-bold mt-0">{{deliveryAddress.street}} {{deliveryAddress.house_number}}
+      {{deliveryAddress.floor}} {{deliveryAddress.door_number}}, {{deliveryAddress.city}}., Cash</p>
+  </div>
+  <hr class="w-100" />
+  <div class="order_detail_foods d-flex flex-row justify-content-between align-items-start flex-wrap">
+    <div
+      class="card col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-4 d-flex flex-row flex-nowrap justify-content-center align-items-start"
+      *ngFor="let product of productList">
+      <div class="card_img">
+        <img [src]="imgPath + product.product_imageUrl" alt="">
+      </div>
+      <div class="card_body d-flex flex-column justify-content-start align-items-start">
+        <h5>{{product.product_quantity}} * {{ product.product_name }}</h5>
+        <p>{{ product.product_description }}</p>
+        <p class="text-grey">
+          <span>(Allergens: </span>
+          <span *ngFor="let allergen of product.allergenName; let last=last">
+            <span *ngIf="last">{{ allergen }}</span>
+            <span *ngIf="!last">{{ allergen }}, </span>
+          </span>
+          <span>)</span>
+        </p>
+        <div class="extra_section" *ngIf="!product.emptyExtra">
+          <span>+&nbsp;</span>
+          <span *ngFor="let extra of product.extras; let last=last">
+            <span *ngIf="last">{{extra.extra_quantity}}*{{extra.extra_name}}</span>
+            <span *ngIf="!last">{{extra.extra_quantity}}*{{extra.extra_name}},&nbsp;</span>
+          </span>
+        </div>
+        <div class="card_footer d-flex justify-content-between align-items-center">
+          <span class="price_item text-warning text-bold">
+            {{ product.product_price }}&nbsp;{{'lei' | currencyUnit}}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="spinner_overlay" *ngIf="isSpinner">
+  <div class="spinner_container">
+    <img src="./assets/images/loading_spinner1.svg" alt="">
+  </div>
+</div>

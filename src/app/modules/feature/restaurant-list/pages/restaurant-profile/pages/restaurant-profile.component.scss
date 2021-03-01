@@ -1,0 +1,349 @@
+.main_container {
+  width: 100%;
+  min-height: calc(100% - 400px);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  .main_menu {
+    width: 78%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    border-right: 1px solid #c4c4c4;
+    .banner {
+      width: 100%;
+      position: relative;
+      .banner_img {
+        object-fit: cover;
+        width: 100%;
+        height: 300px;
+        @media all and (max-width: 590px) {
+          height: 150px;
+        }
+      }
+      .mobile_title {
+        display: none !important;
+        @media all and (max-width: 590px) {
+          display: flex !important;
+          position: absolute;
+          width: 100%;
+          padding: 0 20px;
+          bottom: 10%;
+          left: 0;
+        }
+      }
+      .profile_img {
+        position: absolute;
+        width: 160px;
+        height: 160px;
+        object-fit: cover;
+        border: 5px solid #fff;
+        border-radius: 50%;
+        bottom: -5%;
+        left: 14%;
+        @media all and (max-width: 590px) {
+          display: none;
+        }
+      }
+      .status_badge_open,
+      .status_badge_close {
+        position: absolute;
+        bottom: 5%;
+        left: 22.5rem;
+        padding: 0.2rem 0.5rem;
+        font-size: 14px;
+        border: 2px solid #fff;
+        background-color: #4acc4f;
+        border-radius: 4px;
+        color: #fff;
+        @media all and (min-width: 1660px) {
+          left: 23.5rem;
+        }
+        @media all and (max-width: 1440px) {
+          left: 20rem;
+        }
+        @media all and (max-width: 590px) {
+          display: none;
+        }
+      }
+      .status_badge_close {
+        background-color: #f05050;
+      }
+    }
+    .top_info {
+      width: 80%;
+      margin-left: 14%;
+      margin-top: 2rem;
+      margin-bottom: 1.5rem;
+      h1 {
+        width: 100%;
+        font-weight: bolder;
+        font-size: 32px;
+      }
+      .filter_items {
+        width: 100%;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        .rate-label {
+          background: #feebd6;
+          border-radius: 3px;
+          padding: 0.5rem;
+          font-size: 12px;
+          white-space: nowrap;
+          width: auto;
+          margin-right: 1rem;
+        }
+      }
+      @media all and (max-width: 820px) {
+        margin-left: 4%;
+      }
+      @media all and (max-width: 590px) {
+        display: none;
+      }
+    }
+    .main_info {
+      width: 100%;
+      margin-top: 1rem;
+    }
+    @media all and (max-width: 820px) {
+      width: 100%;
+    }
+  }
+  .side_menu {
+    width: 22%;
+    padding: 2rem 1.5rem;
+    border-left: 1px solid #c4c4c4;
+    h2 {
+      font-size: 24px;
+      width: 100%;
+      margin-bottom: 1rem;
+      margin-top: 1.5rem;
+    }
+    .cart_item {
+      width: 100%;
+      margin-top: 1rem;
+      .item_header {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        margin-bottom: 0.5rem;
+        .item_title {
+          font-size: 18px;
+        }
+      }
+      .ingredient_label {
+        width: 100%;
+        text-align: left;
+        font-size: 16px;
+        color: #666;
+      }
+      .ingredient_items {
+        width: 100%;
+        text-align: left;
+        font-size: 16px;
+        color: #666;
+        padding-top: 0;
+        margin-top: 0;
+      }
+      .extra_section {
+        margin-bottom: 0.5rem;
+        a {
+          color: #111;
+          margin-right: 0.5rem;
+          cursor: pointer;
+        }
+      }
+      .item_footer {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        .price_section {
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-start;
+          align-items: flex-start;
+          .price_item {
+            &:first-child {
+              font-size: 18px;
+            }
+            &:last-child {
+              font-size: 16px;
+            }
+          }
+        }
+        @media all and (max-width: 990px) {
+          flex-direction: column;
+          justify-content: flex-start;
+        }
+      }
+    }
+    .total_price {
+      font-size: 18px;
+      margin-bottom: 1rem;
+    }
+    .btn_section {
+      button {
+        width: 90%;
+        height: 44px;
+        border: none;
+        box-shadow: none;
+        margin-bottom: 1rem;
+        &:hover {
+          box-shadow: 0 0 0 0.15rem rgba(250, 150, 93, 0.856);
+        }
+        &:focus {
+          box-shadow: 0 0 0 0.15rem rgba(250, 150, 93, 0.856);
+        }
+      }
+    }
+    .empty_content {
+      width: 100%;
+      margin-top: 3rem;
+    }
+    @media all and (max-width: 820px) {
+      display: none;
+    }
+  }
+}
+
+:host {
+  ::ng-deep {
+    p-tabview {
+      ul.p-tabview-nav {
+        padding-left: 14%;
+        li {
+          a.p-tabview-nav-link {
+            padding-bottom: 0.5rem;
+            &:not(.p-disabled):focus {
+              box-shadow: none;
+            }
+            &:hover {
+              text-decoration: none;
+            }
+            @media all and (max-width: 590px) {
+              padding: 0.6rem;
+              padding-bottom: 0.5rem;
+              font-size: 14px;
+            }
+          }
+          &.p-highlight {
+            .p-tabview-nav-link {
+              border: solid #f78f1e;
+              border-width: 0 0 3px 0;
+              color: #f78f1e;
+              text-transform: uppercase;
+            }
+          }
+        }
+        @media all and (max-width: 820px) {
+          padding-left: 2%;
+        }
+        @media all and (max-width: 590px) {
+          padding-left: 0;
+        }
+      }
+      .p-tabview-panels {
+        padding-left: 14%;
+        @media all and (max-width: 820px) {
+          padding-left: 2%;
+        }
+        @media all and (max-width: 590px) {
+          padding: 0.6rem;
+        }
+      }
+    }
+    .restaurant_profile_dialog {
+      border-radius: 10px;
+      width: 420px !important;
+      background-color: white;
+      z-index: 110001;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-around;
+      .p-dialog-header {
+        width: 100%;
+        border-top-right-radius: 10px;
+        border-top-left-radius: 10px;
+        text-align: center;
+        padding: 1.5rem 1.5rem 1rem 1.5rem;
+        @media all and (max-width: 360px) {
+          padding: 1rem 1rem 0.5rem 1rem !important;
+        }
+        .p-dialog-title {
+          width: 90%;
+          margin: 1rem auto 0 auto;
+          h2 {
+            font-size: 24px !important;
+            color: #111;
+            font-weight: bolder;
+          }
+          @media all and (max-width: 590px) {
+            h2 {
+              font-size: 22px !important;
+            }
+          }
+        }
+        .p-dialog-header-icons {
+          display: none;
+        }
+      }
+      .p-dialog-content {
+        width: 100%;
+        padding: 0.5rem 0.5rem;
+        p {
+          font-size: 16px;
+          color: #666;
+          @media all and (max-width: 590px) {
+            font-size: 12px !important;
+          }
+        }
+      }
+      .p-dialog-footer {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding-bottom: 1.5rem;
+        button {
+          width: 71px;
+          height: 48px;
+          margin: 0 0.5rem;
+          font-size: 16px;
+          box-shadow: none;
+        }
+      }
+      @media all and (max-width: 590px) {
+        width: 280px !important;
+        height: 280px !important;
+      }
+    }
+  }
+}
+
+.text-warning {
+  color: #f78f1e !important;
+}
+
+.text-white {
+  color: #fff;
+}
+
+.btn-warning {
+  background-color: #f78f1e !important;
+  color: #fff;
+}
+
+.btn-white {
+  background-color: #fff;
+  color: #f78f1e;
+}
+
+.bg-grey {
+  background-color: #e8e8e8;
+}

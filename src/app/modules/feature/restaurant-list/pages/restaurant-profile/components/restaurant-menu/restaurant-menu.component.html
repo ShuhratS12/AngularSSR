@@ -1,0 +1,189 @@
+<main class="menu_container" *ngIf="productList$ | async as products">
+  <h2 class="text-bold" i18n="@@restaurant-profile-menu-a">Menu</h2>
+  <app-inline-carousel *ngIf="categoryList" [itemList]="categoryList" [disabledOption]="false" [optionType]="'category'"
+    (selectedItemEmitter)="selectedItem($event)"></app-inline-carousel>
+  <h5 i18n="@@restaurant-profile-menu-b">Availability</h5>
+  <app-inline-carousel *ngIf="subCategoryList" [itemList]="subCategoryList" [disabledOption]="false"
+    [optionType]="'subcategory'" (selectedItemEmitter)="selectedItem($event)" [translatePosition]="translatePosition">
+  </app-inline-carousel>
+  <div class="form-group search_field" *ngIf="categoryList">
+    <label for="category_search" class="text-bold" i18n="@@restaurant-profile-menu-c">{{ selectedCategory.category_name
+      }}
+      Search</label>
+    <input id="category_search" type="text" class="form-control" placeholder="{{selectedCategory.category_name}} search"
+      [(ngModel)]="searchedProduct" (keyup)="onKeyUpSearch()" autocomplete="off">
+  </div>
+  <div class="restaurant_content" *ngIf="products.length > 0; else noProduct">
+    <h2><span *ngIf="selectedCategory.category_name != ''">{{ selectedCategory.category_name }}</span>
+      <span *ngIf="selectedSubCategory.subcategories_name != ''">-{{selectedSubCategory.subcategories_name }}</span>
+    </h2>
+    <div class="prod_list">
+      <div class="card col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-4" *ngFor="let product of products;">
+        <div class="card_img">
+          <img [src]="imgPath + product.product_imageUrl" alt="" (load)="hideLoader()" (error)="hideLoader()">
+        </div>
+        <div class="card_body">
+          <h5>{{ product.product_name }}</h5>
+          <p>{{ product.product_description }}</p>
+          <div *ngIf="todayWeek>-1 && product.extraNameArr">
+            <p class=""><strong
+                i18n="@@restaurant-profile-daily-soup">Soup:&nbsp;</strong>{{product.extraNameArr[0].extraNameArr}}</p>
+            <p class=""><strong i18n="@@restaurant-profile-daily-maincourse">Main
+                Course:&nbsp;</strong>{{product.extraNameArr[1].extraNameArr}}</p>
+            <p class="" *ngIf="product.extraNameArr[2]">
+              <strong
+                i18n="@@restaurant-profile-daily-dessert">Dessert:&nbsp;</strong>{{product.extraNameArr[2].extraNameArr}}
+            </p>
+            <p class=""><strong i18n="@@restaurant-profile-daily-ordertime">Order
+                Time:&nbsp;</strong>{{product.startTime}} - {{product.endTime}}</p>
+          </div>
+          <p class="text-grey" *ngIf="todayWeek == -1">
+            <span i18n="@@restaurant-profile-menu-d">(Allergens: </span>
+            <span *ngFor="let allergen of product.allergens_name; let last=last">
+              <span *ngIf="last">{{ allergen.allergen_name }}</span>
+              <span *ngIf="!last">{{ allergen.allergen_name }}, </span>
+            </span>
+            <span>)</span>
+          </p>
+          <div class="card_footer">
+            <span class="price_item text-warning text-bold">
+              {{ product.product_price | number:'1.2-2':'en'}}&nbsp;{{'lei' | currencyUnit}}
+            </span>
+            <div class="counter"
+              [ngClass]="{'div-disabled': product.isCart || !isOverdue(restaurant.restaurant_open, restaurant.restaurant_close) || !isTodayWeek || (product.soldOut && product.soldOut == 1) || (todayWeek > -1 && !isOverdue(product.startTime, product.endTime) )}">
+              <app-counter (counterEmitter)="counterChange($event, product.product_id)"
+                (openExtraEmitter)="openExtraPopUp($event, product)"
+                [counterOption]="{checkRequire: true, count: product.count, statusOption: product.isCart ? 'check' : 'bag'}">
+              </app-counter>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ng-template #noProduct>
+    <h4 class="text-center text-warning mt-5" i18n="@@restaurant-profile-no-food">Food Not Found!</h4>
+  </ng-template>
+
+  <p-dialog header="" [(visible)]="isShownExtra" [baseZIndex]="10000" styleClass="custom_dialog" [modal]="true"
+    [dismissableMask]="true">
+    <p-header *ngIf="selectedProduct">
+      <app-image-with-loading [imageUrl]="imgPath + selectedProduct.product_imageUrl"
+        [loader]="'./assets/images/loading_spinner1.svg'" class="card-img">
+      </app-image-with-loading>
+      <h5 class="text-bold text-center">Extras</h5>
+    </p-header>
+    <div class="main_info" *ngIf="selectedProduct">
+      <h2>{{selectedProduct.product_name}}</h2>
+      <p>{{selectedProduct.product_description}}</p>
+      <div class="mb-4" *ngIf="todayWeek === -1"><span i18n="@@restaurant-profile-menu-dialog-a">(Allergens: </span>
+        <span *ngFor="let allergen of selectedProduct.allergens_name; let last=last">
+          <span *ngIf="last">{{ allergen.allergen_name }}</span>
+          <span *ngIf="!last">{{ allergen.allergen_name }}, </span>
+        </span>
+        <span>)</span>
+      </div>
+    </div>
+    <div class="required_extra" *ngIf="requiredExtraList$ | async as requiredExtraList">
+      <h5 class="text-bold" i18n="@@restaurant-profile-menu-dialog-b" *ngIf="requiredExtraList.length > 0">
+        Required extra({{minRequired$ | async}} piece Required)</h5>
+      <ul class="required_extra_list">
+        <li class="d-flex justify-content-start align-items-start" *ngFor="let extra of requiredExtraList">
+          <div class="custom_checkbox">
+            <input type="checkbox" [id]="extra.extra_id" [(ngModel)]="extra.checked"
+              (change)="onRequiredExtraChange(extra.extra_id, $event)">
+            <label [for]="extra.extra_id"></label>
+          </div>
+          <div class="extra_content">
+            <div class="extra_main_info d-flex justify-content-between align-items-start mb-2">
+              <span style="cursor: pointer;"
+                (click)="onRequiredExtraChangeByText(extra.extra_id, extra.checked)">{{extra.extra_name}}</span>
+            </div>
+            <div class="allergens text-left flex-wrap mb-2">
+              <span i18n="@@restaurant-profile-menu-dialog-c">(Allergens: </span>
+              <span *ngFor="let allergen of extra.allergens_name; let last=last">
+                <span *ngIf="last">{{ allergen.allergen }}</span>
+                <span *ngIf="!last">{{ allergen.allergen }}, </span>
+              </span>
+              <span>)</span>
+            </div>
+            <div class="mobile_counter_section">
+              <span class="text-warning text-bold text-left"
+                *ngIf="todayWeek === -1">{{extra.extra_price}}&nbsp;{{'lei'|currencyUnit}}</span>
+              <!-- <app-counter (counterEmitter)="requiredExtraCounterChange($event, extra.extra_id)"
+                [counterOption]="{checkRequire: false, extra_minQuantity: extra.extra_minQuantity, extra_maxQuantity: extra.extra_maxQuantity}">
+              </app-counter> -->
+            </div>
+          </div>
+          <div class="counter_section">
+            <span class="text-warning text-bold text-left mb-hidden"
+              *ngIf="todayWeek === -1">{{extra.extra_price}}&nbsp;{{'lei'|currencyUnit}}</span>
+            <!-- <app-counter (counterEmitter)="requiredExtraCounterChange($event, extra.extra_id)"
+              [counterOption]="{checkRequire: false, extra_minQuantity: extra.extra_minQuantity, extra_maxQuantity: extra.extra_maxQuantity}">
+            </app-counter> -->
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="optional_extra" *ngIf="optionalExtraList$ | async as optionalExtraList">
+      <h5 class="text-bold" i18n="@@restaurant-profile-menu-dialog-d" *ngIf="optionalExtraList.length > 0">Optional
+        extra(Not required)</h5>
+      <ul class="optional_extra_list">
+        <li class="d-flex justify-content-start align-items-start" *ngFor="let extra of optionalExtraList">
+          <div class="custom_checkbox">
+            <input type="checkbox" [id]="extra.extra_id" [(ngModel)]="extra.checked" binary="true"
+              (change)="onOptionalExtraChange(extra.extra_id, $event)">
+            <label [for]="extra.extra_id"></label>
+          </div>
+          <div class="extra_content">
+            <div class="extra_main_info d-flex justify-content-between align-items-start mb-2">
+              <span style="cursor: pointer;"
+                (click)="onOptionalExtraChangeByText(extra.extra_id)">{{extra.extra_name}}</span>
+            </div>
+            <div class="allergens text-left flex-wrap mb-2">
+              <span i18n="@@restaurant-profile-menu-dialog-e">(Allergens: </span>
+              <span *ngFor="let allergen of extra.allergens_name; let last=last">
+                <span *ngIf="last">{{ allergen.allergen }}</span>
+                <span *ngIf="!last">{{ allergen.allergen }}, </span>
+              </span>
+              <span>)</span>
+            </div>
+            <div class="mobile_counter_section" [ngClass]="{'div-disabled': !extra.checked}">
+              <span class="text-warning text-bold text-left">{{extra.extra_price}}&nbsp;{{'lei' | currencyUnit}}</span>
+              <!-- <app-counter (counterEmitter)="optionalExtraCounterChange($event, extra.extra_id)"
+                [counterOption]="{checkRequire: false, extra_minQuantity: extra.extra_minQuantity, extra_maxQuantity: extra.extra_maxQuantity}">
+              </app-counter> -->
+            </div>
+          </div>
+          <div class="counter_section">
+            <span
+              class="text-warning text-bold text-left mb-hidden">{{extra.extra_price}}&nbsp;{{'lei'|currencyUnit}}</span>
+            <!-- <app-counter (counterEmitter)="optionalExtraCounterChange($event, extra.extra_id)"
+              [counterOption]="{checkRequire: false, extra_minQuantity: extra.extra_minQuantity, extra_maxQuantity: extra.extra_maxQuantity}">
+            </app-counter> -->
+          </div>
+        </li>
+      </ul>
+      <!-- <hr />
+      <div class="d-flex justify-content-center align-items-center show_more_section" *ngIf="isExtra">
+        <a class="text-warning text-decoration-none text-bold" i18n="@@restaurant-profile-menu-dialog-f">SHOW MORE</a>
+      </div> -->
+
+    </div>
+    <div class="comments">
+      <h5 class="text-bold" i18n="@@restaurant-profile-menu-dialog-g">Special requests</h5>
+      <p class="">(Tell me if you have any allergies or if we need to omit any ingredients)</p>
+      <textarea class="comment_content" name="" id="" cols="30" rows="4" [(ngModel)]="comment"></textarea>
+    </div>
+    <p-footer>
+      <button type="button" class="btn btn-warning text-white btn-expand" [disabled]="!isEnableAddCart"
+        (click)="closeExtra()" i18n="@@restaurant-profile-menu-dialog-h">Add to the
+        cart</button>
+    </p-footer>
+  </p-dialog>
+</main>
+<div class="spinner_overlay" *ngIf="isSpinner">
+  <div class="spinner_container">
+    <img src="./assets/images/loading_spinner1.svg" alt="">
+  </div>
+</div>

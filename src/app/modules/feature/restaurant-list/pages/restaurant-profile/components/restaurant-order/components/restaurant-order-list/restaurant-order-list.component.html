@@ -1,0 +1,73 @@
+<div *ngIf="cartProductList$ | async as cartList">
+  <div class="cart_item" *ngFor="let product of cartList">
+    <div class="item_container d-flex flex-sm-column flex-md-row flex-lg-row justify-content-sm-start justify-content-md-between
+       justify-content-lg-between align-items-start">
+      <div class="item_content d-flex flex-column align-items-start justify-content-start">
+        <h6 class="text-bold">{{product.product.count}} * {{product.product.product_name}}</h6>
+        <label for="" class="ingredient_label">{{product.product.product_description}}</label>
+        <p class="ingredient_items" *ngIf="product.product.allergens_name && product.product.allergens_name.length > 0">
+          <span>(Allergens: </span>
+          <span *ngFor="let allergen of product.product.allergens_name; let last=last">
+            <span *ngIf="last">{{ allergen.allergen_name }}</span>
+            <span *ngIf="!last">{{ allergen.allergen_name }}, </span>
+          </span>
+          <span>)</span>
+        </p>
+        <div class="extra_section">
+          <span *ngIf="product.requiredExtra.length > 0 || product.optionalExtra.length > 0">+&nbsp;</span>
+          <span *ngFor="let extra of product.requiredExtra; let first=first">
+            <span *ngIf="first"></span>
+            <span *ngIf="!first">, </span>
+            {{extra.count}}*{{extra.extra_name}}
+          </span>
+          <span *ngFor="let extra of product.optionalExtra; let first=first">
+            <span *ngIf="first && product.requiredExtra.length == 0"></span>
+            <span *ngIf="!first || product.requiredExtra.length > 0">, </span>
+            {{extra.count}}*{{extra.extra_name}}</span>
+        </div>
+        <label class="price_item text-warning text-bold">
+          {{product.totalPrice | number:'1.2-2':'en'}}&nbsp;{{'lei' | currencyUnit}}
+        </label>
+        <span class="price_item text-grey text-bold" *ngIf="product.product.box_price">
+          {{product.product.box_name}}: {{product.product.count * product.product.box_price}}&nbsp;{{'lei' |
+          currencyUnit}}
+        </span>
+      </div>
+      <div class="counter d-flex justify-content-end justify-content-sm-start">
+        <app-counter (counterEmitter)="counterChange($event, product)"
+          [counterOption]="{checkRequire: false, count: product.product.count}">
+        </app-counter>
+        <h5 class="ml-3 pt-2"><span><i class="fas fa-trash-alt" style="color: #999; cursor: pointer;"
+              (click)="deleteProductFromCart(product, 'current')"></i></span></h5>
+      </div>
+    </div>
+    <div class="item_comment mt-3" *ngIf="product.comment !== ''">
+      <h6>Comment:</h6>
+      <p>{{product.comment}}</p>
+    </div>
+    <hr />
+  </div>
+  <div class="total_price text-bold">
+    <h5 class="text-bold text-warning">
+      Total: {{totalPrice$ | async | number:'1.2-2':'en'}}&nbsp;{{'lei' | currencyUnit}}
+    </h5>
+    <!-- <h5 class="text-bold">
+      With subscription: 6000 Ft
+    </h5> -->
+  </div>
+</div>
+
+<p-dialog header="" [(visible)]="isDeleteAllDialog" [baseZIndex]="10000" styleClass="restaurant_profile_dialog"
+  [modal]="true" class="restaurant_order_dialog">
+  <p-header>
+    <h2 i18n="@@restaurant-order-delete-dialog-a">Are you sure you want to delete all cart contents?</h2>
+  </p-header>
+  <p class="text-bold text-center" i18n="@@restaurant-order-delete-dialog-b">This will cause all your previous data to
+    be lost and cannot be restored.</p>
+  <p-footer>
+    <button type="button" class="btn bg-grey" (click)="closeMsg(false)"
+      i18n="@@restaurant-order-delete-dialog-c">No</button>
+    <button type="button" class="btn bg-grey" (click)="closeMsg(true)"
+      i18n="@@restaurant-order-delete-dialog-d">Yes</button>
+  </p-footer>
+</p-dialog>
